@@ -69,8 +69,8 @@
                                     <option value="KSA-JAFURA-S021">KSA-JAFURA-S021</option>
                                     <option value="KSA-FADHALI-S022">KSA-FADHALI-S022</option>
                                     <option value="KSA-JAFURA-NMP">KSA-JAFURA-NMP</option>
-                                    <option value="KSA-JAFURA-NMP">KSA-JUBAILYARD</option>
-                                    <option value="KSA-JAFURA-NMP">KSA-ABQAIQYARD</option>
+                                    <option value="KSA-JUBAILYARD">KSA-JUBAILYARD</option>
+                                    <option value="KSA-ABQAIQYARD">KSA-ABQAIQYARD</option>
                                 </select>
                             </div>
                             <div class="mb-3">
@@ -152,11 +152,14 @@
             const ppeForm = document.getElementById('ppeForm');
             const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
 
+            // Load previous submissions from localStorage
+            let submissions = JSON.parse(localStorage.getItem('ppeData')) || [];
+
             // Form submission
             ppeForm.addEventListener('submit', function(e) {
                 e.preventDefault();
 
-                // Populate preview
+                // Populate preview modal
                 document.getElementById('previewEmployee').textContent = document.getElementById('employeeName').value;
                 document.getElementById('previewFileNo').textContent = document.getElementById('fileNo').value;
                 document.getElementById('previewMaterial').textContent = document.getElementById('material').value;
@@ -166,12 +169,11 @@
                 document.getElementById('previewIssuer').textContent = document.getElementById('issuerName').value;
                 document.getElementById('previewRemarks').textContent = document.getElementById('remarks').value || 'N/A';
 
-                // Show confirmation modal
                 confirmationModal.show();
             });
 
-            // Confirm update → send data to Google Sheets
-            document.getElementById('confirmUpdate').addEventListener('click', async function() {
+            // Confirm update → save locally
+            document.getElementById('confirmUpdate').addEventListener('click', function() {
                 const formData = {
                     employee: document.getElementById('employeeName').value,
                     fileNo: document.getElementById('fileNo').value,
@@ -183,29 +185,39 @@
                     remarks: document.getElementById('remarks').value || 'N/A'
                 };
 
-                try {
-                    const response = await fetch("YOUR_GOOGLE_SCRIPT_URL", {
-                        method: "POST",
-                        body: JSON.stringify(formData)
-                    });
+                submissions.push(formData);
+                localStorage.setItem('ppeData', JSON.stringify(submissions));
 
-                    if (response.ok) {
-                        alert("PPE record successfully updated to the master sheet!");
-                    } else {
-                        alert("Error saving data.");
-                    }
-                } catch (err) {
-                    alert("Connection error: " + err);
-                }
-
+                alert("PPE record successfully updated!");
                 confirmationModal.hide();
                 ppeForm.reset();
                 document.getElementById('issueDate').valueAsDate = new Date();
             });
 
-            // Download report (placeholder)
+            // Convert data to CSV
+            function convertToCSV(data) {
+                if(data.length === 0) return '';
+                const headers = Object.keys(data[0]).join(',');
+                const rows = data.map(obj => Object.values(obj).join(',')).join('\n');
+                return headers + '\n' + rows;
+            }
+
+            // Download CSV
             document.getElementById('downloadReport').addEventListener('click', function() {
-                alert('In a real implementation, this would download the latest report from the server.');
+                if(submissions.length === 0) {
+                    alert("No data available to download!");
+                    return;
+                }
+                const csv = convertToCSV(submissions);
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'ppe_submissions.csv';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
             });
         });
     </script>
