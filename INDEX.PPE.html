@@ -101,7 +101,7 @@
 
                     <div class="d-flex justify-content-between mt-4">
                         <button type="button" id="downloadReport" class="btn btn-success">
-                            <i class="fas fa-download me-2"></i>Download Report
+                            <i class="fas fa-download me-2"></i>Download Excel
                         </button>
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-paper-plane me-2"></i>Update Record
@@ -143,23 +143,22 @@
         </div>
     </div>
 
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Set today's date as default
             document.getElementById('issueDate').valueAsDate = new Date();
-
             const ppeForm = document.getElementById('ppeForm');
             const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
 
-            // Load previous submissions from localStorage
+            // Load previous submissions
             let submissions = JSON.parse(localStorage.getItem('ppeData')) || [];
 
-            // Form submission
+            // Show confirmation modal on submit
             ppeForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-
-                // Populate preview modal
                 document.getElementById('previewEmployee').textContent = document.getElementById('employeeName').value;
                 document.getElementById('previewFileNo').textContent = document.getElementById('fileNo').value;
                 document.getElementById('previewMaterial').textContent = document.getElementById('material').value;
@@ -168,7 +167,6 @@
                 document.getElementById('previewDate').textContent = document.getElementById('issueDate').value;
                 document.getElementById('previewIssuer').textContent = document.getElementById('issuerName').value;
                 document.getElementById('previewRemarks').textContent = document.getElementById('remarks').value || 'N/A';
-
                 confirmationModal.show();
             });
 
@@ -188,36 +186,23 @@
                 submissions.push(formData);
                 localStorage.setItem('ppeData', JSON.stringify(submissions));
 
-                alert("PPE record successfully updated!");
+                alert("PPE record saved successfully!");
+
                 confirmationModal.hide();
                 ppeForm.reset();
                 document.getElementById('issueDate').valueAsDate = new Date();
             });
 
-            // Convert data to CSV
-            function convertToCSV(data) {
-                if(data.length === 0) return '';
-                const headers = Object.keys(data[0]).join(',');
-                const rows = data.map(obj => Object.values(obj).join(',')).join('\n');
-                return headers + '\n' + rows;
-            }
-
-            // Download CSV
+            // Download Excel
             document.getElementById('downloadReport').addEventListener('click', function() {
                 if(submissions.length === 0) {
                     alert("No data available to download!");
                     return;
                 }
-                const csv = convertToCSV(submissions);
-                const blob = new Blob([csv], { type: 'text/csv' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'ppe_submissions.csv';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
+                const ws = XLSX.utils.json_to_sheet(submissions);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "PPE Submissions");
+                XLSX.writeFile(wb, "ppe_submissions.xlsx");
             });
         });
     </script>
