@@ -6,72 +6,22 @@
     <title>ORCP PPE ISSUE FORM Form</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
     <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .card {
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            border: none;
-        }
-        .card-header {
-            background-color: #0d6efd;
-            color: white;
-            border-radius: 10px 10px 0 0 !important;
-            padding: 15px 20px;
-        }
-        .form-container {
-            padding: 20px;
-        }
-        .btn-primary {
-            background-color: #0d6efd;
-            border: none;
-        }
-        .btn-primary:hover {
-            background-color: #0b5ed7;
-        }
-        .btn-success {
-            background-color: #198754;
-        }
-        .material-suggestion {
-            max-height: 200px;
-            overflow-y: auto;
-            position: absolute;
-            width: 100%;
-            z-index: 1000;
-            display: none;
-        }
-        .suggestion-item {
-            padding: 8px 15px;
-            cursor: pointer;
-            border-bottom: 1px solid #eee;
-            background: white;
-        }
-        .suggestion-item:hover {
-            background-color: #f0f0f0;
-        }
-        .logo-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .logo {
-            max-width: 180px;
-            height: auto;
-        }
-        .required-field::after {
-            content: "*";
-            color: red;
-            margin-left: 4px;
-        }
-        .preview-table {
-            font-size: 14px;
-        }
-        .preview-table th {
-            background-color: #f8f9fa;
-        }
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .card { border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); border: none; }
+        .card-header { background-color: #0d6efd; color: white; border-radius: 10px 10px 0 0 !important; padding: 15px 20px; }
+        .form-container { padding: 20px; }
+        .btn-primary { background-color: #0d6efd; border: none; }
+        .btn-primary:hover { background-color: #0b5ed7; }
+        .btn-success { background-color: #198754; }
+        .material-suggestion { max-height: 200px; overflow-y: auto; position: absolute; width: 100%; z-index: 1000; display: none; }
+        .suggestion-item { padding: 8px 15px; cursor: pointer; border-bottom: 1px solid #eee; background: white; }
+        .suggestion-item:hover { background-color: #f0f0f0; }
+        .logo-container { text-align: center; margin-bottom: 20px; }
+        .logo { max-width: 180px; height: auto; }
+        .required-field::after { content: "*"; color: red; margin-left: 4px; }
+        .preview-table { font-size: 14px; }
+        .preview-table th { background-color: #f8f9fa; }
     </style>
 </head>
 <body>
@@ -171,38 +121,14 @@
                         <p>Please review the details before updating:</p>
                         <div class="table-responsive">
                             <table class="table table-bordered preview-table">
-                                <tr>
-                                    <th width="150">Employee Name:</th>
-                                    <td id="previewEmployee"></td>
-                                </tr>
-                                <tr>
-                                    <th>File Number:</th>
-                                    <td id="previewFileNo"></td>
-                                </tr>
-                                <tr>
-                                    <th>Material:</th>
-                                    <td id="previewMaterial"></td>
-                                </tr>
-                                <tr>
-                                    <th>Project:</th>
-                                    <td id="previewProject"></td>
-                                </tr>
-                                <tr>
-                                    <th>Quantity:</th>
-                                    <td id="previewQuantity"></td>
-                                </tr>
-                                <tr>
-                                    <th>Issue Date:</th>
-                                    <td id="previewDate"></td>
-                                </tr>
-                                <tr>
-                                    <th>Issuer Name:</th>
-                                    <td id="previewIssuer"></td>
-                                </tr>
-                                <tr>
-                                    <th>Remarks:</th>
-                                    <td id="previewRemarks"></td>
-                                </tr>
+                                <tr><th width="150">Employee Name:</th><td id="previewEmployee"></td></tr>
+                                <tr><th>File Number:</th><td id="previewFileNo"></td></tr>
+                                <tr><th>Material:</th><td id="previewMaterial"></td></tr>
+                                <tr><th>Project:</th><td id="previewProject"></td></tr>
+                                <tr><th>Quantity:</th><td id="previewQuantity"></td></tr>
+                                <tr><th>Issue Date:</th><td id="previewDate"></td></tr>
+                                <tr><th>Issuer Name:</th><td id="previewIssuer"></td></tr>
+                                <tr><th>Remarks:</th><td id="previewRemarks"></td></tr>
                             </table>
                         </div>
                     </div>
@@ -220,87 +146,14 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Set today's date as default
             document.getElementById('issueDate').valueAsDate = new Date();
-            
-            // Material data
-            const materials = [
-                {code: "4000001846", name: "SAFETY PIN FOR CHICAGO COUPLING"},
-                {code: "6200000118", name: "SAFETY GOGGLES CLEAR"},
-                {code: "6200000086", name: "SAFETY SHOES FOR WORKERS-39"},
-                {code: "6200000087", name: "SAFETY SHOES FOR WORKERS-40"},
-                {code: "6200000088", name: "SAFETY SHOES FOR WORKERS-41"},
-                {code: "6200000089", name: "SAFETY SHOES FOR WORKERS-42"},
-                {code: "6200000090", name: "SAFETY SHOES FOR WORKERS-43"},
-                {code: "6200000091", name: "SAFETY SHOES FOR WORKERS-44"},
-                {code: "6200000642", name: "SAFETY SHOES FOR STAFF-39"},
-                {code: "6200000080", name: "SAFETY SHOES FOR STAFF-40"},
-                {code: "6200000081", name: "SAFETY SHOES FOR STAFF-41"},
-                {code: "6200000082", name: "SAFETY SHOES FOR STAFF-42"},
-                {code: "6200000083", name: "SAFETY SHOES FOR STAFF-43"},
-                {code: "6200000084", name: "SAFETY SHOES FOR STAFF-44"},
-                {code: "6200000079", name: "SAFETY HARNESS W/LANYARD & BIG HOOK"},
-                {code: "4000000176", name: "SAFETY GOOGLES-DARK"},
-                {code: "6200000135", name: "COVERALL DISPOSABLE TYPE"},
-                {code: "6200000019", name: "COVERALL DARK BLUE 100% COTTON SMALL"},
-                {code: "6200000017", name: "COVERALL DARK BLUE 100% COTTON LARGE"},
-                {code: "6200000014", name: "COVERALL DARK BLUE 100% COTTON 2XLARGE"},
-                {code: "6200000227", name: "COVERALL  2XLARGE DARK BLUE"},
-                {code: "6200000225", name: "COVERALL  LARGE DARK BLUE"},
-                {code: "6200000224", name: "COVERALL  MEDIUM DARK BLUE"},
-                {code: "6200000333", name: "COVERALL  SMALL DARK BLUE"},
-                {code: "6200000226", name: "COVERALL XLARGE DARK BLUE"},
-                {code: "6200000742", name: "COVERALL  3XLARGE DARK BLUE"},
-                {code: "6200000782", name: "GLOVES-RUBBER TYPE,CHEMICAL RESISTANCE"},
-                {code: "6200000060", name: "GLOVES-WORKING TYPE"},
-                {code: "6200000070", name: "HELMET YELLOW MSA"},
-                {code: "6200000069", name: "HELMET WHITE MSA GEAR TYPE"},
-                {code: "4000000189", name: "VISOR FOR SAND BLASTING HELMET-INNER"},
-                {code: "4000006961", name: "VISOR FOR SAND BLASTING HELMET-OUTER"}
-            ];
 
-            // Material input with suggestions
-            const materialInput = document.getElementById('material');
-            const suggestionsContainer = document.getElementById('materialSuggestions');
-
-            materialInput.addEventListener('input', function() {
-                const value = this.value.toLowerCase();
-                suggestionsContainer.innerHTML = '';
-                suggestionsContainer.style.display = 'none';
-                
-                if (value.length < 2) return;
-                
-                const filtered = materials.filter(m => 
-                    m.code.toLowerCase().includes(value) || 
-                    m.name.toLowerCase().includes(value)
-                );
-                
-                if (filtered.length) {
-                    suggestionsContainer.style.display = 'block';
-                    filtered.forEach(m => {
-                        const div = document.createElement('div');
-                        div.className = 'suggestion-item';
-                        div.textContent = `${m.code} ${m.name}`;
-                        div.addEventListener('click', function() {
-                            materialInput.value = `${m.code} ${m.name}`;
-                            suggestionsContainer.style.display = 'none';
-                        });
-                        suggestionsContainer.appendChild(div);
-                    });
-                }
-            });
-
-            document.addEventListener('click', function(e) {
-                if (e.target !== materialInput) {
-                    suggestionsContainer.style.display = 'none';
-                }
-            });
-
-            // Form submission
             const ppeForm = document.getElementById('ppeForm');
             const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
-            
+
+            // Form submission
             ppeForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                
+
                 // Populate preview
                 document.getElementById('previewEmployee').textContent = document.getElementById('employeeName').value;
                 document.getElementById('previewFileNo').textContent = document.getElementById('fileNo').value;
@@ -310,26 +163,45 @@
                 document.getElementById('previewDate').textContent = document.getElementById('issueDate').value;
                 document.getElementById('previewIssuer').textContent = document.getElementById('issuerName').value;
                 document.getElementById('previewRemarks').textContent = document.getElementById('remarks').value || 'N/A';
-                
+
                 // Show confirmation modal
                 confirmationModal.show();
             });
 
-            // Confirm update
-            document.getElementById('confirmUpdate').addEventListener('click', function() {
-                // In a real implementation, this would send data to a server
-                // For demonstration, we'll simulate the process
-                
-                // Show success message
-                alert('PPE record successfully updated to the Excel master file!');
-                
-                // Close modal and reset form
+            // Confirm update → send data to Google Sheets
+            document.getElementById('confirmUpdate').addEventListener('click', async function() {
+                const formData = {
+                    employee: document.getElementById('employeeName').value,
+                    fileNo: document.getElementById('fileNo').value,
+                    material: document.getElementById('material').value,
+                    project: document.getElementById('project').value,
+                    quantity: document.getElementById('quantity').value,
+                    issueDate: document.getElementById('issueDate').value,
+                    issuer: document.getElementById('issuerName').value,
+                    remarks: document.getElementById('remarks').value || 'N/A'
+                };
+
+                try {
+                    const response = await fetch("YOUR_GOOGLE_SCRIPT_URL", {
+                        method: "POST",
+                        body: JSON.stringify(formData)
+                    });
+
+                    if (response.ok) {
+                        alert("PPE record successfully updated to the master sheet!");
+                    } else {
+                        alert("Error saving data.");
+                    }
+                } catch (err) {
+                    alert("Connection error: " + err);
+                }
+
                 confirmationModal.hide();
                 ppeForm.reset();
                 document.getElementById('issueDate').valueAsDate = new Date();
             });
 
-            // Download report
+            // Download report (placeholder)
             document.getElementById('downloadReport').addEventListener('click', function() {
                 alert('In a real implementation, this would download the latest report from the server.');
             });
