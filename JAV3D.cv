@@ -444,7 +444,8 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container hero-content">
-            <h1>Mohammad Javed Shaikh</h1>
+            <h1>Hi i am</h1>
+            <h2>Mohammad Javed Shaikh</h2>
             <p>Document Controller with 2.5+ years of experience in managing project & Administration documentation for major organizations</p>
             <a href="#contact" class="btn">Get In Touch</a>
         </div>
