@@ -1,80 +1,659 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Scaffolding Material Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
-    h1 { text-align: center; color: #333; }
-    h2 { text-align: center; color: #0073e6; margin-bottom: 20px; }
-    table { border-collapse: collapse; width: 100%; margin-top: 20px; background: #fff; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-    th { background: #0073e6; color: white; }
-    tr:nth-child(even) { background: #f2f2f2; }
-    .chart-container { width: 100%; max-width: 900px; margin: 40px auto; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scaffolding Material Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #3498db;
+            --light: #ecf0f1;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 20px;
+            border: none;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+        }
+        
+        .summary-card {
+            text-align: center;
+            padding: 15px;
+        }
+        
+        .summary-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .summary-title {
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-weight: 600;
+        }
+        
+        .material-table {
+            width: 100%;
+        }
+        
+        .material-table th {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .material-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .site-header {
+            background-color: var(--accent) !important;
+            color: white;
+            text-align: center;
+        }
+        
+        .low-stock {
+            background-color: #ffe6e6 !important;
+        }
+        
+        .medium-stock {
+            background-color: #fff9e6 !important;
+        }
+        
+        .high-stock {
+            background-color: #e6ffe6 !important;
+        }
+        
+        .search-container {
+            margin-bottom: 20px;
+        }
+        
+        .filter-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        
+        .stats-icon {
+            font-size: 2.5rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+        
+        .dashboard-section {
+            margin-bottom: 30px;
+        }
+        
+        .site-balance {
+            font-weight: 600;
+        }
+        
+        .site-balance.low {
+            color: var(--danger);
+        }
+        
+        .site-balance.medium {
+            color: var(--warning);
+        }
+        
+        .site-balance.high {
+            color: var(--success);
+        }
+        
+        .table-responsive {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
 </head>
 <body>
-  <h1 id="project-title">Scaffolding Dashboard</h1>
-  <div class="chart-container">
-    <canvas id="siteChart"></canvas>
-  </div>
-  <table id="data-table"></table>
+    <header class="dashboard-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1><i class="fas fa-tools me-3"></i>Scaffolding Material Dashboard</h1>
+                    <p class="lead">Comprehensive overview of material balances across sites</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="btn-group">
+                        <button class="btn btn-outline-light" id="importBtn">
+                            <i class="fas fa-file-import me-2"></i>Import CSV
+                        </button>
+                        <button class="btn btn-outline-light" id="exportBtn">
+                            <i class="fas fa-file-export me-2"></i>Export Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
 
-  <script>
-    async function loadCSV() {
-      const response = await fetch("data.csv"); 
-      const text = await response.text();
-      const rows = text.trim().split("\n").map(r => r.split(","));
-      
-      // First row = Project Name
-      const projectName = rows[0][0];
-      document.getElementById("project-title").innerText = projectName;
+    <div class="container">
+        <!-- Summary Cards -->
+        <div class="row dashboard-section">
+            <div class="col-md-3">
+                <div class="card summary-card">
+                    <div><i class="fas fa-boxes stats-icon"></i></div>
+                    <div class="summary-number" id="totalMaterials">0</div>
+                    <div class="summary-title">TOTAL MATERIAL TYPES</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card summary-card">
+                    <div><i class="fas fa-warehouse stats-icon"></i></div>
+                    <div class="summary-number" id="totalSites">0</div>
+                    <div class="summary-title">SITES</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card summary-card">
+                    <div><i class="fas fa-chart-line stats-icon"></i></div>
+                    <div class="summary-number" id="avgStock">0</div>
+                    <div class="summary-title">AVERAGE STOCK LEVEL</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card summary-card">
+                    <div><i class="fas fa-exclamation-triangle stats-icon"></i></div>
+                    <div class="summary-number" id="lowStockItems">0</div>
+                    <div class="summary-title">LOW STOCK ITEMS</div>
+                </div>
+            </div>
+        </div>
 
-      // Second row = Headers
-      const headers = rows[1];
+        <!-- Filters and Search -->
+        <div class="filter-section">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search material code or name...">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select id="siteFilter" class="form-select">
+                        <option value="">All Sites</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select id="stockFilter" class="form-select">
+                        <option value="">All Stock Levels</option>
+                        <option value="low">Low Stock</option>
+                        <option value="medium">Medium Stock</option>
+                        <option value="high">High Stock</option>
+                    </select>
+                </div>
+            </div>
+        </div>
 
-      // Table build
-      let html = "<tr>";
-      headers.forEach(h => html += `<th>${h}</th>`);
-      html += "</tr>";
+        <!-- Charts -->
+        <div class="row dashboard-section">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Stock Distribution by Site</div>
+                    <div class="card-body">
+                        <canvas id="siteChart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Top Materials by Total Balance</div>
+                    <div class="card-body">
+                        <canvas id="materialChart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-      rows.slice(2).forEach(row => {
-        html += "<tr>";
-        row.forEach(cell => html += `<td>${cell}</td>`);
-        html += "</tr>";
-      });
-      document.getElementById("data-table").innerHTML = html;
+        <!-- Data Table -->
+        <div class="dashboard-section">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>Material Details</span>
+                    <div>
+                        <button class="btn btn-sm btn-outline-secondary" id="toggleViewBtn">
+                            <i class="fas fa-table me-1"></i> Toggle View
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover material-table" id="materialTable">
+                            <thead>
+                                <tr>
+                                    <th>Material Code</th>
+                                    <th>Material Name</th>
+                                    <th>Total Balance</th>
+                                    <!-- Site columns will be added dynamically -->
+                                </tr>
+                            </thead>
+                            <tbody id="materialData">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-      // Chart.js - Compare site totals
-      const siteHeaders = headers.slice(2, -1); // exclude code,name,total
-      const siteTotals = Array(siteHeaders.length).fill(0);
+    <!-- CSV Import Modal -->
+    <div class="modal fade" id="importModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Import CSV Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Please select your "SCAFFOLDING MATERIAL OVERALL" CSV file:</p>
+                    <div class="mb-3">
+                        <input class="form-control" type="file" id="csvFile" accept=".csv">
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Ensure your CSV follows the structure: Material Code (B), Material Name (C), Total Balance (G), and site columns from H to P.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="processCSV">Process Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-      rows.slice(2).forEach(row => {
-        row.slice(2, -1).forEach((val, i) => {
-          siteTotals[i] += parseFloat(val) || 0;
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const importBtn = document.getElementById('importBtn');
+            const exportBtn = document.getElementById('exportBtn');
+            const importModal = new bootstrap.Modal(document.getElementById('importModal'));
+            const processCSVBtn = document.getElementById('processCSV');
+            const csvFileInput = document.getElementById('csvFile');
+            const searchInput = document.getElementById('searchInput');
+            const siteFilter = document.getElementById('siteFilter');
+            const stockFilter = document.getElementById('stockFilter');
+            const toggleViewBtn = document.getElementById('toggleViewBtn');
+            
+            // Sample data for demonstration (will be replaced with CSV data)
+            let materialData = [];
+            let sites = [];
+            let isDetailedView = true;
+            
+            // Event listeners
+            importBtn.addEventListener('click', () => importModal.show());
+            processCSVBtn.addEventListener('click', processCSV);
+            searchInput.addEventListener('input', filterMaterials);
+            siteFilter.addEventListener('change', filterMaterials);
+            stockFilter.addEventListener('change', filterMaterials);
+            toggleViewBtn.addEventListener('click', toggleView);
+            exportBtn.addEventListener('click', exportData);
+            
+            // Load sample data for demonstration
+            loadSampleData();
+            
+            function processCSV() {
+                const file = csvFileInput.files[0];
+                if (!file) {
+                    alert('Please select a CSV file first.');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const csvData = e.target.result;
+                    parseCSVData(csvData);
+                    importModal.hide();
+                };
+                reader.readAsText(file);
+            }
+            
+            function parseCSVData(csvData) {
+                // In a real scenario, you would parse the CSV data here
+                // For this example, we'll continue with the sample data
+                console.log('CSV data would be parsed here');
+                updateDashboard();
+            }
+            
+            function loadSampleData() {
+                // Generate sample data for demonstration
+                sites = ['Site A', 'Site B', 'Site C', 'Site D', 'Site E', 'Site F'];
+                
+                materialData = [
+                    {
+                        code: 'SCF001',
+                        name: 'Standard Scaffold Tube',
+                        total: 1450,
+                        siteBalances: [250, 300, 200, 400, 150, 150]
+                    },
+                    {
+                        code: 'SCF002',
+                        name: 'Adjustable Base Plate',
+                        total: 980,
+                        siteBalances: [150, 180, 120, 200, 150, 180]
+                    },
+                    {
+                        code: 'SCF003',
+                        name: 'Scaffold Coupler',
+                        total: 3250,
+                        siteBalances: [500, 600, 450, 800, 500, 400]
+                    },
+                    {
+                        code: 'SCF004',
+                        name: 'Guard Rail',
+                        total: 750,
+                        siteBalances: [100, 150, 120, 180, 100, 100]
+                    },
+                    {
+                        code: 'SCF005',
+                        name: 'Toe Board',
+                        total: 620,
+                        siteBalances: [100, 120, 80, 150, 90, 80]
+                    },
+                    {
+                        code: 'SCF006',
+                        name: 'Ladder',
+                        total: 42,
+                        siteBalances: [7, 8, 5, 12, 5, 5]
+                    },
+                    {
+                        code: 'SCF007',
+                        name: 'Scaffold Stairway',
+                        total: 28,
+                        siteBalances: [4, 5, 3, 8, 4, 4]
+                    },
+                    {
+                        code: 'SCF008',
+                        name: 'Safety Net',
+                        total: 85,
+                        siteBalances: [15, 20, 10, 20, 10, 10]
+                    }
+                ];
+                
+                // Populate site filter
+                sites.forEach(site => {
+                    const option = document.createElement('option');
+                    option.value = site;
+                    option.textContent = site;
+                    siteFilter.appendChild(option);
+                });
+                
+                updateDashboard();
+            }
+            
+            function updateDashboard() {
+                updateSummaryCards();
+                renderCharts();
+                renderTable();
+            }
+            
+            function updateSummaryCards() {
+                document.getElementById('totalMaterials').textContent = materialData.length;
+                document.getElementById('totalSites').textContent = sites.length;
+                
+                const totalStock = materialData.reduce((sum, material) => sum + material.total, 0);
+                const avgStock = Math.round(totalStock / materialData.length);
+                document.getElementById('avgStock').textContent = avgStock.toLocaleString();
+                
+                const lowStockCount = materialData.filter(m => m.total < 100).length;
+                document.getElementById('lowStockItems').textContent = lowStockCount;
+            }
+            
+            function renderCharts() {
+                // Site Chart - Distribution of stock across sites
+                const siteCtx = document.getElementById('siteChart').getContext('2d');
+                const siteTotals = sites.map((site, index) => {
+                    return materialData.reduce((sum, material) => sum + material.siteBalances[index], 0);
+                });
+                
+                new Chart(siteCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: sites,
+                        datasets: [{
+                            data: siteTotals,
+                            backgroundColor: [
+                                '#3498db', '#2ecc71', '#e74c3c', '#f39c12', '#9b59b6', '#1abc9c'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'right'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Total Stock by Site'
+                            }
+                        }
+                    }
+                });
+                
+                // Material Chart - Top materials by total balance
+                const materialCtx = document.getElementById('materialChart').getContext('2d');
+                const sortedMaterials = [...materialData].sort((a, b) => b.total - a.total).slice(0, 5);
+                
+                new Chart(materialCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: sortedMaterials.map(m => m.name),
+                        datasets: [{
+                            label: 'Total Balance',
+                            data: sortedMaterials.map(m => m.total),
+                            backgroundColor: '#3498db'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Top 5 Materials by Stock'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+            
+            function renderTable() {
+                const tableHead = document.querySelector('#materialTable thead tr');
+                const tableBody = document.getElementById('materialData');
+                
+                // Clear existing columns (except the first three)
+                while (tableHead.children.length > 3) {
+                    tableHead.removeChild(tableHead.lastChild);
+                }
+                
+                // Add site columns to table header
+                sites.forEach(site => {
+                    const th = document.createElement('th');
+                    th.textContent = site;
+                    th.className = 'site-header';
+                    tableHead.appendChild(th);
+                });
+                
+                // Clear table body
+                tableBody.innerHTML = '';
+                
+                // Add material rows
+                materialData.forEach(material => {
+                    const row = document.createElement('tr');
+                    
+                    // Apply row styling based on stock level
+                    if (material.total < 100) {
+                        row.classList.add('low-stock');
+                    } else if (material.total < 500) {
+                        row.classList.add('medium-stock');
+                    } else {
+                        row.classList.add('high-stock');
+                    }
+                    
+                    // Add material code, name, and total balance
+                    row.innerHTML = `
+                        <td>${material.code}</td>
+                        <td>${material.name}</td>
+                        <td class="fw-bold">${material.total.toLocaleString()}</td>
+                    `;
+                    
+                    // Add site balances
+                    material.siteBalances.forEach(balance => {
+                        const td = document.createElement('td');
+                        td.textContent = balance.toLocaleString();
+                        
+                        // Add class based on balance level
+                        if (balance < 20) {
+                            td.classList.add('site-balance', 'low');
+                        } else if (balance < 50) {
+                            td.classList.add('site-balance', 'medium');
+                        } else {
+                            td.classList.add('site-balance', 'high');
+                        }
+                        
+                        row.appendChild(td);
+                    });
+                    
+                    tableBody.appendChild(row);
+                });
+            }
+            
+            function filterMaterials() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedSite = siteFilter.value;
+                const selectedStock = stockFilter.value;
+                
+                const filteredData = materialData.filter(material => {
+                    // Search filter
+                    const matchesSearch = material.code.toLowerCase().includes(searchTerm) || 
+                                         material.name.toLowerCase().includes(searchTerm);
+                    
+                    // Site filter
+                    let matchesSite = true;
+                    if (selectedSite) {
+                        const siteIndex = sites.indexOf(selectedSite);
+                        matchesSite = material.siteBalances[siteIndex] > 0;
+                    }
+                    
+                    // Stock level filter
+                    let matchesStock = true;
+                    if (selectedStock === 'low') {
+                        matchesStock = material.total < 100;
+                    } else if (selectedStock === 'medium') {
+                        matchesStock = material.total >= 100 && material.total < 500;
+                    } else if (selectedStock === 'high') {
+                        matchesStock = material.total >= 500;
+                    }
+                    
+                    return matchesSearch && matchesSite && matchesStock;
+                });
+                
+                // Update table with filtered data
+                const tableBody = document.getElementById('materialData');
+                tableBody.innerHTML = '';
+                
+                filteredData.forEach(material => {
+                    const row = document.createElement('tr');
+                    
+                    if (material.total < 100) {
+                        row.classList.add('low-stock');
+                    } else if (material.total < 500) {
+                        row.classList.add('medium-stock');
+                    } else {
+                        row.classList.add('high-stock');
+                    }
+                    
+                    row.innerHTML = `
+                        <td>${material.code}</td>
+                        <td>${material.name}</td>
+                        <td class="fw-bold">${material.total.toLocaleString()}</td>
+                    `;
+                    
+                    material.siteBalances.forEach(balance => {
+                        const td = document.createElement('td');
+                        td.textContent = balance.toLocaleString();
+                        
+                        if (balance < 20) {
+                            td.classList.add('site-balance', 'low');
+                        } else if (balance < 50) {
+                            td.classList.add('site-balance', 'medium');
+                        } else {
+                            td.classList.add('site-balance', 'high');
+                        }
+                        
+                        row.appendChild(td);
+                    });
+                    
+                    tableBody.appendChild(row);
+                });
+            }
+            
+            function toggleView() {
+                isDetailedView = !isDetailedView;
+                
+                const siteColumns = document.querySelectorAll('#materialTable th.site-header, #materialTable td:nth-child(n+4)');
+                siteColumns.forEach(col => {
+                    col.style.display = isDetailedView ? '' : 'none';
+                });
+                
+                toggleViewBtn.innerHTML = isDetailedView ? 
+                    '<i class="fas fa-table me-1"></i> Simplified View' : 
+                    '<i class="fas fa-table me-1"></i> Detailed View';
+            }
+            
+            function exportData() {
+                // In a real implementation, this would export the data to CSV
+                alert('Export functionality would be implemented here. Data would be downloaded as a CSV file.');
+            }
         });
-      });
-
-      new Chart(document.getElementById("siteChart"), {
-        type: "bar",
-        data: {
-          labels: siteHeaders,
-          datasets: [{
-            label: "Total Material per Site",
-            data: siteTotals,
-            backgroundColor: "rgba(0,123,255,0.6)"
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { display: false } },
-          scales: { y: { beginAtZero: true } }
-        }
-      });
-    }
-    loadCSV();
-  </script>
+    </script>
 </body>
 </html>
