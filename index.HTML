@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scaffolding Material Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
+    h1 { text-align: center; color: #333; }
+    h2 { text-align: center; color: #0073e6; margin-bottom: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; background: #fff; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    th { background: #0073e6; color: white; }
+    tr:nth-child(even) { background: #f2f2f2; }
+    .chart-container { width: 100%; max-width: 900px; margin: 40px auto; }
+  </style>
+</head>
+<body>
+  <h1 id="project-title">Scaffolding Dashboard</h1>
+  <div class="chart-container">
+    <canvas id="siteChart"></canvas>
+  </div>
+  <table id="data-table"></table>
+
+  <script>
+    async function loadCSV() {
+      const response = await fetch("data.csv"); 
+      const text = await response.text();
+      const rows = text.trim().split("\n").map(r => r.split(","));
+      
+      // First row = Project Name
+      const projectName = rows[0][0];
+      document.getElementById("project-title").innerText = projectName;
+
+      // Second row = Headers
+      const headers = rows[1];
+
+      // Table build
+      let html = "<tr>";
+      headers.forEach(h => html += `<th>${h}</th>`);
+      html += "</tr>";
+
+      rows.slice(2).forEach(row => {
+        html += "<tr>";
+        row.forEach(cell => html += `<td>${cell}</td>`);
+        html += "</tr>";
+      });
+      document.getElementById("data-table").innerHTML = html;
+
+      // Chart.js - Compare site totals
+      const siteHeaders = headers.slice(2, -1); // exclude code,name,total
+      const siteTotals = Array(siteHeaders.length).fill(0);
+
+      rows.slice(2).forEach(row => {
+        row.slice(2, -1).forEach((val, i) => {
+          siteTotals[i] += parseFloat(val) || 0;
+        });
+      });
+
+      new Chart(document.getElementById("siteChart"), {
+        type: "bar",
+        data: {
+          labels: siteHeaders,
+          datasets: [{
+            label: "Total Material per Site",
+            data: siteTotals,
+            backgroundColor: "rgba(0,123,255,0.6)"
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+    }
+    loadCSV();
+  </script>
+</body>
+</html>
