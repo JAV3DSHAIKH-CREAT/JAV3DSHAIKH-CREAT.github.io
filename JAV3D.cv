@@ -425,7 +425,6 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header>
         <div class="container header-container">
             <div class="logo">JAVED <span>SHAIKH</span></div>
@@ -441,17 +440,15 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
     <section class="hero">
         <div class="container hero-content">
-            <h1>Hi i am</h1>
+            <h1>Hi, I am</h1>
             <h2>Mohammad Javed Shaikh</h2>
             <p>Document Controller with 2.5+ years of experience in managing project & Administration documentation for major organizations</p>
             <a href="#contact" class="btn">Get In Touch</a>
         </div>
     </section>
 
-    <!-- About Section -->
     <section id="about">
         <div class="container">
             <h2 class="section-title">About Me</h2>
@@ -461,9 +458,9 @@
                     <p>I am a dedicated Document Controller with extensive experience in managing complex documentation systems for major projects. My expertise includes document management, quality control, and team supervision in high-pressure environments.</p>
                 </div>
                 <div class="about-image">
-                    <img id="profile-pic" class="profile-picture" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Mohammad Javed Shaikh">
+                    <img id="profile-pic" class="profile-picture" src="javed.bmp" alt="Mohammad Javed Shaikh">
                     <div class="upload-btn-wrapper">
-                        <button class="upload-btn">Upload Your Photo</button>
+                        <button class="upload-btn">Change Photo</button>
                         <input type="file" id="photo-upload" accept="image/*" />
                     </div>
                 </div>
@@ -471,7 +468,6 @@
         </div>
     </section>
 
-    <!-- Education Section -->
     <section id="education" style="background-color: #f9f9f9;">
         <div class="container">
             <h2 class="section-title">Education</h2>
@@ -495,7 +491,6 @@
         </div>
     </section>
 
-    <!-- Experience Section -->
     <section id="experience">
         <div class="container">
             <h2 class="section-title">Professional Experience</h2>
@@ -551,7 +546,6 @@
         </div>
     </section>
 
-    <!-- Skills Section -->
     <section id="skills" style="background-color: #f9f9f9;">
         <div class="container">
             <h2 class="section-title">Skills & Expertise</h2>
@@ -595,7 +589,6 @@
         </div>
     </section>
 
-    <!-- Contact Section -->
     <section id="contact">
         <div class="container">
             <h2 class="section-title">Contact Information</h2>
@@ -628,17 +621,16 @@
                     </div>
                     
                     <div style="margin-top: 30px; text-align: center;">
-                        <a href="#contact" class="btn">Contact Me</a>
+                        <a href="mailto:shaikhmohammadjaved99@gmail.com" class="btn">Email Me Directly</a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
     <footer>
         <div class="container footer-content">
-            <p>&copy; 2023 Mohammad Javed Shaikh. All Rights Reserved.</p>
+            <p>&copy; 2026 Mohammad Javed Shaikh. All Rights Reserved.</p>
             <div class="social-links">
                 <a href="https://www.linkedin.com/in/shaikh-mohammad-javed-6b9b80279/" target="_blank" title="LinkedIn">
                     <i class="fab fa-linkedin"></i>
@@ -648,7 +640,7 @@
     </footer>
 
     <script>
-        // Simple JavaScript for header background change on scroll
+        // Header background change on scroll
         window.addEventListener('scroll', function() {
             const header = document.querySelector('header');
             if (window.scrollY > 100) {
@@ -660,7 +652,7 @@
             }
         });
 
-        // Function to handle profile picture upload
+        // Profile picture upload handler
         document.getElementById('photo-upload').addEventListener('change', function(event) {
             const file = event.target.files[0];
             if (file) {
